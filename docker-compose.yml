@@ -1,0 +1,32 @@
+services:
+  #######################################
+  # Frontend
+  #######################################
+  frontend:
+    container_name: "${PROJECT_NAME}-frontend"
+    build:
+      context: ./repo
+      dockerfile: frontend.Dockerfile
+      args:
+        FRONTEND_BASE_FOLDER: "${FRONTEND_BASE_FOLDER}"
+        FRONTEND_NPM_BUILD_SCRIPT: "${FRONTEND_NPM_BUILD_SCRIPT}"
+    restart: unless-stopped
+    networks:
+      - proxynet
+  #######################################
+  # Backend
+  #######################################
+  backend:
+    container_name: "${PROJECT_NAME}-backend"
+    build:
+      context: ./repo
+      dockerfile: backend.Dockerfile
+      args:
+        BACKEND_BASE_FOLDER: "${BACKEND_BASE_FOLDER}"
+    restart: unless-stopped
+    networks:
+      - proxynet
+
+networks:
+  proxynet:
+    name: custom_network
