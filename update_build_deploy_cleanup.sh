@@ -1,0 +1,1 @@
+./update.sh && ./build.sh && ./deploy.sh && ./cleanup.sh

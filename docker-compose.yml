@@ -3,7 +3,7 @@ services:
   # Frontend
   #######################################
   frontend:
-    container_name: "${PROJECT_NAME}-frontend"
+    container_name: "app-frontend"
     build:
       context: ./frontend
     restart: unless-stopped
@@ -13,7 +13,7 @@ services:
   # Backend
   #######################################
   backend:
-    container_name: "${PROJECT_NAME}-backend"
+    container_name: "app-backend"
     build:
       context: ./backend
     restart: unless-stopped
