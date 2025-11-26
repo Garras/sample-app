@@ -5,11 +5,8 @@ services:
   frontend:
     container_name: "${PROJECT_NAME}-frontend"
     build:
-      context: ./repo
+      context: .
       dockerfile: frontend.Dockerfile
-      args:
-        FRONTEND_BASE_FOLDER: "${FRONTEND_BASE_FOLDER}"
-        FRONTEND_NPM_BUILD_SCRIPT: "${FRONTEND_NPM_BUILD_SCRIPT}"
     restart: unless-stopped
     networks:
       - proxynet
@@ -19,10 +16,8 @@ services:
   backend:
     container_name: "${PROJECT_NAME}-backend"
     build:
-      context: ./repo
+      context: .
       dockerfile: backend.Dockerfile
-      args:
-        BACKEND_BASE_FOLDER: "${BACKEND_BASE_FOLDER}"
     restart: unless-stopped
     networks:
       - proxynet
