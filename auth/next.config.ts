@@ -10,6 +10,13 @@ export default {
     //
     // The cost: assets stay at /_next/*, so the gateway needs a location for them. The
     // generated configuration adds one.
+    // Tells Next the app is reached under /auth, for ASSETS only - routing is untouched,
+    // which is the whole point: basePath would also rewrite routing and break Better Auth
+    // (see above). Without this the HTML asks for /_next/... at the domain root, where the
+    // gateway serves the frontend, and every chunk comes back as HTML:
+    // "Uncaught SyntaxError: Unexpected token '<'".
+    assetPrefix: "/auth",
+
     output: "standalone",
 
     // better-sqlite3 is a native module - bundling it breaks the .node binding.

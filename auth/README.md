@@ -43,6 +43,7 @@ This app is an example wired for one specific mount point, and **four things car
 | | |
 |---|---|
 | the folder nesting | `app/auth/...` — what makes Next serve the routes there |
+| `assetPrefix` in `next.config.ts` | where the HTML asks for `/_next/*` |
 | `lib/paths.ts` | `AUTH_API`, used by the pages' own fetch calls |
 | `BETTER_AUTH_BASE_PATH` | `/auth/api/auth` — what Better Auth matches requests on |
 | `loginPage` / `consentPage` in `lib/auth.ts` | `/auth/login`, `/auth/consent` |
@@ -57,9 +58,12 @@ Two consequences worth knowing:
 - `BETTER_AUTH_URL` must be the **origin only**, with no path. The prefix belongs in
   `BETTER_AUTH_BASE_PATH`. Better Auth routes on the second and builds its published URLs
   from the first.
-- Assets stay at `/_next/*` rather than under `/auth`, so the gateway needs a location for
-  them. Fine here; it would collide if the application behind the same gateway were also
-  Next.
+- Assets are handled by **`assetPrefix: "/auth"`**, which is the half of `basePath` that is
+  safe to use: it changes only where the HTML asks for `/_next/*`, leaving routing alone.
+  The standalone server serves them under the prefix as well, so the gateway needs no extra
+  location. Without it every chunk is requested at the domain root, comes back as the
+  frontend's HTML, and the browser reports
+  `Uncaught SyntaxError: Unexpected token '<'`.
 
 ## Notes
 

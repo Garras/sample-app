@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "migrate": "better-auth migrate -y --config lib/auth.ts"
+    "migrate": "better-auth migrate -y --config lib/auth.ts",
+    "trust-clients": "node scripts/trust-clients.mjs"
   },
   "dependencies": {
     "@better-auth/oauth-provider": "^1.6.25",
