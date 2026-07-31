@@ -1,0 +1,38 @@
+#########################################################
+# Better Auth - OIDC provider.
+#
+# Its own compose project, deliberately separate from the frontend/backend one: it is a
+# different application with a different lifecycle, and the build scripts in this folder
+# do not touch it.
+#
+# It joins custom_network so the gateway can reach it by service name once something is
+# actually protected by it. Nothing is yet.
+#########################################################
+services:
+  auth:
+    container_name: "app-auth"
+    build:
+      context: .
+    restart: unless-stopped
+    environment:
+      # The address the browser and the gateway both use. Better Auth builds its discovery
+      # document from this, so it must be the external URL - not http://auth:3000.
+      BETTER_AUTH_URL: "${BETTER_AUTH_URL:-http://localhost:3000}"
+      BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?set it in .env - openssl rand -base64 32}"
+      DATABASE_PATH: "/app/data/auth.db"
+      TRUSTED_ORIGINS: "${TRUSTED_ORIGINS:-http://localhost:3000}"
+    volumes:
+      # The user database. Without this the accounts vanish on every rebuild.
+      - ./data:/app/data
+    ports:
+      # Published for now because nothing proxies it yet - drop this once the gateway does.
+      # The host port is configurable because 3000 is a popular default and collides with
+      # whatever else you have running; it must agree with BETTER_AUTH_URL.
+      - "${AUTH_PORT:-3100}:3000"
+    networks:
+      - proxynet
+
+networks:
+  proxynet:
+    name: custom_network
+    external: true
