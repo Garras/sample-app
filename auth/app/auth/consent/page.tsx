@@ -1,6 +1,7 @@
 "use client";
 
 import {useState} from "react";
+import {AUTH_API} from "../../../lib/paths";
 
 /**
  * The consent screen, required by the oauth-provider plugin - `consentPage` has no
@@ -26,7 +27,7 @@ export default function Consent() {
             return;
         }
 
-        const response = await fetch("/api/auth/oauth2/consent", {
+        const response = await fetch(`${AUTH_API}/oauth2/consent`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({code, accept}),

@@ -1,6 +1,7 @@
 "use client";
 
 import {useState} from "react";
+import {AUTH_API} from "../../../lib/paths";
 
 type Action = "in" | "up";
 
@@ -23,12 +24,24 @@ export default function Login() {
     async function submit(action: Action) {
         setMessage("");
 
-        const response = await fetch(`/api/auth/sign-${action}/email`, {
+        const response = await fetch(`${AUTH_API}/sign-${action}/email`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             // `name` is required on sign-up and ignored on sign-in.
             body: JSON.stringify({email, password, name: email}),
         });
+
+        // A non-JSON answer means the request never reached Better Auth - most likely the
+        // path resolved to something else on this domain. Worth naming, because fetch
+        // follows redirects: a login page returned as 200 otherwise looks like success and
+        // the flow silently bounces back here.
+        if (!response.headers.get("content-type")?.includes("json")) {
+            setMessage(
+                `unexpected non-JSON reply from ${AUTH_API} (HTTP ${response.status}) - ` +
+                    "check that path is really Better Auth",
+            );
+            return;
+        }
 
         if (!response.ok) {
             const body: {message?: string} = await response.json().catch(() => ({}));
@@ -40,7 +53,7 @@ export default function Login() {
         // proves the session exists.
         const params = new URLSearchParams(window.location.search);
         window.location.href = params.has("client_id")
-            ? `/api/auth/oauth2/authorize?${params.toString()}`
+            ? `${AUTH_API}/oauth2/authorize?${params.toString()}`
             : "/";
     }
 

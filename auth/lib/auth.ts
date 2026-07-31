@@ -26,6 +26,21 @@ export const auth = betterAuth({
 
     secret: process.env.BETTER_AUTH_SECRET ?? "dev-only-secret-change-me",
 
+    /**
+     * Where Better Auth matches incoming request paths - and this is the subtle one.
+     *
+     * It matches on THIS ALONE, ignoring any path in BETTER_AUTH_URL, while still using
+     * that URL to build the endpoints it advertises. So when the app is served under a
+     * prefix, the prefix belongs here and NOT in BETTER_AUTH_URL:
+     *
+     *   served at https://host/auth  ->  BETTER_AUTH_URL=https://host
+     *                                    BETTER_AUTH_BASE_PATH=/auth/api/auth
+     *
+     * Put the prefix in BETTER_AUTH_URL instead and every endpoint 404s while the pages
+     * still render, which is a thoroughly misleading symptom.
+     */
+    basePath: process.env.BETTER_AUTH_BASE_PATH ?? "/api/auth",
+
     database: new Database(process.env.DATABASE_PATH ?? "./data/auth.db"),
 
     // The only way in, for now. Social providers would be a change here, not at the
@@ -43,8 +58,9 @@ export const auth = betterAuth({
         oauthProvider({
             // Better Auth ships no UI at all - these point at the two pages in app/.
             // Neither has a default; the plugin refuses to type-check without them.
-            loginPage: "/login",
-            consentPage: "/consent",
+            // Physically nested under app/auth/, matching where the gateway serves this.
+            loginPage: "/auth/login",
+            consentPage: "/auth/consent",
         }),
     ],
 

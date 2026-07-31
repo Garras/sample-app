@@ -19,6 +19,8 @@ services:
       # document from this, so it must be the external URL - not http://auth:3000.
       BETTER_AUTH_URL: "${BETTER_AUTH_URL:-http://localhost:3000}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET:?set it in .env - openssl rand -base64 32}"
+      # Must include the Next basePath - see lib/auth.ts.
+      BETTER_AUTH_BASE_PATH: "${BETTER_AUTH_BASE_PATH:-/api/auth}"
       DATABASE_PATH: "/app/data/auth.db"
       TRUSTED_ORIGINS: "${TRUSTED_ORIGINS:-http://localhost:3000}"
     volumes:

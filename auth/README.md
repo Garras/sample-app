@@ -19,20 +19,47 @@ docker compose up -d --build
 docker network create custom_network
 ```
 
-Then http://localhost:3100 — sign up on `/login`, and the discovery document is at
-`/api/auth/.well-known/openid-configuration`.
+Then http://localhost:3100/auth/login to sign up, with the discovery document at
+`/auth/api/auth/.well-known/openid-configuration`.
 
 ## What is here
 
 | File | Purpose |
 |---|---|
 | `lib/auth.ts` | the Better Auth instance — imported by the route handler *and* by `better-auth migrate` |
-| `app/api/auth/[...all]/route.ts` | every endpoint hangs off this one catch-all |
-| `app/login/page.tsx` | Better Auth ships no login UI |
-| `app/consent/page.tsx` | nor a consent screen; `consentPage` has no default |
+| `app/auth/api/auth/[...all]/route.ts` | every endpoint hangs off this one catch-all |
+| `app/auth/login/page.tsx` | Better Auth ships no login UI |
+| `app/auth/consent/page.tsx` | nor a consent screen; `consentPage` has no default |
+| `lib/paths.ts` | the `/auth` prefix, as the browser sees it |
 
 SQLite on a bind mount (`./data`). Migrations run on every container start — idempotent,
 so an empty volume becomes a working database with nothing to remember.
+
+## Everything is served under `/auth`
+
+This app is an example wired for one specific mount point, and **four things carry that
+`/auth` prefix independently**:
+
+| | |
+|---|---|
+| the folder nesting | `app/auth/...` — what makes Next serve the routes there |
+| `lib/paths.ts` | `AUTH_API`, used by the pages' own fetch calls |
+| `BETTER_AUTH_BASE_PATH` | `/auth/api/auth` — what Better Auth matches requests on |
+| `loginPage` / `consentPage` in `lib/auth.ts` | `/auth/login`, `/auth/consent` |
+
+Moving to a different prefix means changing all four. That is deliberate rather than
+elegant: **Next's `basePath` cannot be used here.** Next strips it from the request before a
+route handler sees it, and Better Auth then re-adds the path from `BETTER_AUTH_URL` when
+matching, so the two cancel out — every endpoint 404s while the pages still render.
+
+Two consequences worth knowing:
+
+- `BETTER_AUTH_URL` must be the **origin only**, with no path. The prefix belongs in
+  `BETTER_AUTH_BASE_PATH`. Better Auth routes on the second and builds its published URLs
+  from the first.
+- Assets stay at `/_next/*` rather than under `/auth`, so the gateway needs a location for
+  them. Fine here; it would collide if the application behind the same gateway were also
+  Next.
 
 ## Notes
 

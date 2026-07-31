@@ -1,16 +1,18 @@
+import {AUTH_API} from "../lib/paths";
+
 export default function Home() {
     return (
         <main>
             <h1>Better Auth</h1>
-            <p>OIDC provider. Nothing is protected by it yet.</p>
+            <p>OIDC provider.</p>
             <ul>
                 <li>
-                    <a href="/api/auth/.well-known/openid-configuration">
+                    <a href={`${AUTH_API}/.well-known/openid-configuration`}>
                         discovery document
                     </a>
                 </li>
                 <li>
-                    <a href="/login">login</a>
+                    <a href="/auth/login">login</a>
                 </li>
             </ul>
         </main>

@@ -1,4 +1,4 @@
-import {auth} from "../../../../lib/auth";
+import {auth} from "../../../../../lib/auth";
 import {toNextJsHandler} from "better-auth/next-js";
 
 // Every Better Auth endpoint hangs off this one catch-all route: the OIDC discovery
